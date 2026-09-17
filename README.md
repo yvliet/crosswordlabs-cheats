@@ -26,7 +26,7 @@ javascript:(function(){const s=document.querySelector('.cx svg');if(!s||!window.
 click it whenever you're on a puzzle to add both buttons to your toolbar.
 
 ### 3. userscript
-install [`crosswordlabs-solutions.user.js`](crosswordlabs-solutions.user.js) in violentmonkey or tampermonkey if you want both buttons to load automatically on every puzzle.
+install [`crosswordlabs-cheats.user.js`](https://github.com/yvliet/crosswordlabs-cheats/blob/main/crosswordlabs-cheats.user.js) in violentmonkey or tampermonkey if you want both buttons to load automatically on every puzzle.
 
 ## license
 
