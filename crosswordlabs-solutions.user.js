@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         CrosswordLabs Solution Overlay & Autofill
 // @namespace    https://github.com/yvliet/crosswordlabs-solutions
-// @version      1.3.1
-// @description  Adds a solution watermark overlay and an instant 1-click solve & victory button to CrosswordLabs puzzles.
+// @version      1.3.2
+// @description  Adds a solution watermark overlay and an instant 1-click solve & victory button to CrosswordLabs puzzles with matched button dimensions.
 // @author       yvliet
 // @match        https://crosswordlabs.com/view/*
 // @match        https://crosswordlabs.com/embed/*
@@ -41,37 +41,42 @@
       }
       #toggle-overlay-btn,
       #solve-puzzle-btn {
-        margin-left: 8px;
-        font-weight: 600;
-        border-radius: 4px;
-        padding: 4px 12px;
-        cursor: pointer;
-        font-size: 13px;
+        margin: 0 3px !important;
+        font-size: 18px !important;
+        padding: 5px 12px !important;
+        border-radius: 5px !important;
+        font-weight: normal !important;
+        line-height: normal !important;
+        font-family: inherit !important;
+        cursor: pointer !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        vertical-align: middle !important;
         transition: background-color 0.15s ease, border-color 0.15s ease;
       }
       #toggle-overlay-btn {
-        background-color: #2563eb;
-        color: #ffffff;
-        border: 1px solid #1d4ed8;
+        background: #2563eb !important;
+        color: #ffffff !important;
+        border: 1px solid #1d4ed8 !important;
       }
       #toggle-overlay-btn:hover {
-        background-color: #1d4ed8;
+        background: #1d4ed8 !important;
       }
       #toggle-overlay-btn.active {
-        background-color: #059669;
-        border-color: #047857;
-        color: #ffffff;
+        background: #059669 !important;
+        border-color: #047857 !important;
+        color: #ffffff !important;
       }
       #toggle-overlay-btn.active:hover {
-        background-color: #047857;
+        background: #047857 !important;
       }
       #solve-puzzle-btn {
-        background-color: #10b981;
-        color: #ffffff;
-        border: 1px solid #059669;
+        background: #10b981 !important;
+        color: #ffffff !important;
+        border: 1px solid #059669 !important;
       }
       #solve-puzzle-btn:hover {
-        background-color: #059669;
+        background: #059669 !important;
       }
     `;
     document.head.appendChild(style);

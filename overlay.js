@@ -40,48 +40,53 @@
       display: inline;
     }
 
-    /* Shared toolbar button styles */
+    /* Shared toolbar button styles - perfectly sized to match CrosswordLabs buttons */
     #toggle-overlay-btn,
     #solve-puzzle-btn {
-      margin-left: 8px;
-      font-weight: 600;
-      border-radius: 4px;
-      padding: 4px 12px;
-      cursor: pointer;
-      font-size: 13px;
+      margin: 0 3px !important;
+      font-size: 18px !important;
+      padding: 5px 12px !important;
+      border-radius: 5px !important;
+      font-weight: normal !important;
+      line-height: normal !important;
+      font-family: inherit !important;
+      cursor: pointer !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      vertical-align: middle !important;
       transition: background-color 0.15s ease, border-color 0.15s ease;
     }
 
     /* Show/Hide Solutions button */
     #toggle-overlay-btn {
-      background-color: #2563eb;
-      color: #ffffff;
-      border: 1px solid #1d4ed8;
+      background: #2563eb !important;
+      color: #ffffff !important;
+      border: 1px solid #1d4ed8 !important;
     }
 
     #toggle-overlay-btn:hover {
-      background-color: #1d4ed8;
+      background: #1d4ed8 !important;
     }
 
     #toggle-overlay-btn.active {
-      background-color: #059669;
-      border-color: #047857;
-      color: #ffffff;
+      background: #059669 !important;
+      border-color: #047857 !important;
+      color: #ffffff !important;
     }
 
     #toggle-overlay-btn.active:hover {
-      background-color: #047857;
+      background: #047857 !important;
     }
 
     /* Solve Puzzle button */
     #solve-puzzle-btn {
-      background-color: #10b981;
-      color: #ffffff;
-      border: 1px solid #059669;
+      background: #10b981 !important;
+      color: #ffffff !important;
+      border: 1px solid #059669 !important;
     }
 
     #solve-puzzle-btn:hover {
-      background-color: #059669;
+      background: #059669 !important;
     }
   `;
   document.head.appendChild(style);
@@ -154,8 +159,7 @@
           });
         });
 
-        // Step 2: Trigger CrosswordLabs' native gradeAll routine.
-        // In CrosswordLabs, setActiveCell invokes gradeAll(last_index) whenever focus alternates between clues.
+        // Step 2: Trigger CrosswordLabs' native gradeAll routine
         const clues = document.querySelectorAll('#across li, #down li');
         if (window.$ && clues.length >= 2) {
           window.$(clues[0]).trigger('click');
@@ -164,7 +168,6 @@
           clues[0].dispatchEvent(new MouseEvent('click', { bubbles: true }));
           clues[1].dispatchEvent(new MouseEvent('click', { bubbles: true }));
         } else {
-          // Fallback: alternate focus between first and last SVG cells
           const cellGroups = document.querySelectorAll('.cx svg g');
           if (cellGroups.length >= 2) {
             if (window.$) {
@@ -177,7 +180,7 @@
           }
         }
 
-        // Step 3: Guaranteed grading and victory celebration fallback
+        // Step 3: Guaranteed celebration fallback check
         setTimeout(() => {
           const starImg = document.querySelector('img[src*="star.svg"]');
           if (!starImg) {
@@ -202,5 +205,5 @@
     }
   }
 
-  console.info(`[CrosswordLabs Tools] Initialized with ${hintsCount} cell overlays and Solve button.`);
+  console.info(`[CrosswordLabs Tools] Initialized with ${hintsCount} cell overlays and toolbar buttons.`);
 })();
