@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         CrosswordLabs Solution Overlay & Autofill
-// @namespace    https://github.com/yvliet/crosswordlabs-solutions
+// @namespace    https://github.com/yvliet/crosswordlabs-cheats
 // @version      1.3.2
 // @description  Adds a solution watermark overlay and an instant 1-click solve & victory button to CrosswordLabs puzzles with matched button dimensions.
 // @author       yvliet
