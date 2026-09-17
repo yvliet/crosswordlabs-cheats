@@ -1,6 +1,6 @@
-# crosswordlabs-solutions
+# crosswordlabs-cheats
 
-tool to show answers in crosswordlabs.com
+it's a funny thing i made during history class. tool to show answers in crosswordlabs.com
 
 ## how it works
 
