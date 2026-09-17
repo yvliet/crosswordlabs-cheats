@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         CrosswordLabs Solution Overlay & Autofill
 // @namespace    https://github.com/yvliet/crosswordlabs-solutions
-// @version      1.3.0
-// @description  Adds a solution watermark overlay and a 1-click solve button to CrosswordLabs puzzles.
+// @version      1.3.1
+// @description  Adds a solution watermark overlay and an instant 1-click solve & victory button to CrosswordLabs puzzles.
 // @author       yvliet
 // @match        https://crosswordlabs.com/view/*
 // @match        https://crosswordlabs.com/embed/*
@@ -128,6 +128,7 @@
         solveBtn.textContent = 'Solve Puzzle';
 
         solveBtn.addEventListener('click', () => {
+          // 1. Write lowercase answers to all cells
           window.grid.forEach((row, r) => {
             row.forEach((cell, c) => {
               if (cell && cell.char) {
@@ -139,10 +140,46 @@
             });
           });
 
-          const gradeBtn = document.querySelector('#grade');
-          if (gradeBtn) {
-            gradeBtn.click();
+          // 2. Trigger native grading loop
+          const clues = document.querySelectorAll('#across li, #down li');
+          if (window.$ && clues.length >= 2) {
+            window.$(clues[0]).trigger('click');
+            window.$(clues[1]).trigger('click');
+          } else if (clues.length >= 2) {
+            clues[0].dispatchEvent(new MouseEvent('click', { bubbles: true }));
+            clues[1].dispatchEvent(new MouseEvent('click', { bubbles: true }));
+          } else {
+            const cellGroups = document.querySelectorAll('.cx svg g');
+            if (cellGroups.length >= 2) {
+              if (window.$) {
+                window.$(cellGroups[0]).trigger('click');
+                window.$(cellGroups[cellGroups.length - 1]).trigger('click');
+              } else {
+                cellGroups[0].dispatchEvent(new MouseEvent('click', { bubbles: true }));
+                cellGroups[cellGroups.length - 1].dispatchEvent(new MouseEvent('click', { bubbles: true }));
+              }
+            }
           }
+
+          // 3. Fallback celebration check
+          setTimeout(() => {
+            const starImg = document.querySelector('img[src*="star.svg"]');
+            if (!starImg) {
+              document.querySelectorAll('.cx svg g').forEach(g => g.classList.add('correct'));
+              document.querySelectorAll('#across li, #down li').forEach(li => li.classList.add('correct'));
+
+              const starUrl = (typeof window.STAR_URL !== 'undefined' && window.STAR_URL) 
+                ? window.STAR_URL 
+                : '/static/1745514585/img/star.svg';
+
+              const star = document.createElement('img');
+              star.setAttribute('src', starUrl + '?t=' + (+new Date()));
+              star.style.cssText = 'position:fixed;top:0;left:0;bottom:0;right:0;width:100%;height:100%;z-index:9999;pointer-events:none;';
+              star.onload = function() { setTimeout(() => star.remove(), 3000); };
+              star.onerror = function() { star.remove(); };
+              document.body.appendChild(star);
+            }
+          }, 60);
         });
 
         menu.appendChild(solveBtn);

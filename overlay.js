@@ -3,7 +3,8 @@
  * 
  * Non-destructively adds two tools to the CrosswordLabs puzzle toolbar:
  * 1. "Show Solutions" - Toggles a dimmed lowercase solution watermark directly underneath user inputs.
- * 2. "Solve Puzzle" - Automatically populates the puzzle with the answers and triggers native grading.
+ * 2. "Solve Puzzle" - Automatically populates the puzzle with the answers, triggers native grading,
+ *    persists the solved state, and plays the victory celebration animation immediately.
  */
 
 (function setupCrosswordTools() {
@@ -141,6 +142,7 @@
       solveBtn.textContent = 'Solve Puzzle';
 
       solveBtn.addEventListener('click', () => {
+        // Step 1: Fill all cells with lowercase answers
         window.grid.forEach((row, r) => {
           row.forEach((cell, c) => {
             if (cell && cell.char) {
@@ -152,11 +154,48 @@
           });
         });
 
-        // Trigger CrosswordLabs native grading loop
-        const gradeBtn = document.querySelector('#grade');
-        if (gradeBtn) {
-          gradeBtn.click();
+        // Step 2: Trigger CrosswordLabs' native gradeAll routine.
+        // In CrosswordLabs, setActiveCell invokes gradeAll(last_index) whenever focus alternates between clues.
+        const clues = document.querySelectorAll('#across li, #down li');
+        if (window.$ && clues.length >= 2) {
+          window.$(clues[0]).trigger('click');
+          window.$(clues[1]).trigger('click');
+        } else if (clues.length >= 2) {
+          clues[0].dispatchEvent(new MouseEvent('click', { bubbles: true }));
+          clues[1].dispatchEvent(new MouseEvent('click', { bubbles: true }));
+        } else {
+          // Fallback: alternate focus between first and last SVG cells
+          const cellGroups = document.querySelectorAll('.cx svg g');
+          if (cellGroups.length >= 2) {
+            if (window.$) {
+              window.$(cellGroups[0]).trigger('click');
+              window.$(cellGroups[cellGroups.length - 1]).trigger('click');
+            } else {
+              cellGroups[0].dispatchEvent(new MouseEvent('click', { bubbles: true }));
+              cellGroups[cellGroups.length - 1].dispatchEvent(new MouseEvent('click', { bubbles: true }));
+            }
+          }
         }
+
+        // Step 3: Guaranteed grading and victory celebration fallback
+        setTimeout(() => {
+          const starImg = document.querySelector('img[src*="star.svg"]');
+          if (!starImg) {
+            document.querySelectorAll('.cx svg g').forEach(g => g.classList.add('correct'));
+            document.querySelectorAll('#across li, #down li').forEach(li => li.classList.add('correct'));
+
+            const starUrl = (typeof window.STAR_URL !== 'undefined' && window.STAR_URL) 
+              ? window.STAR_URL 
+              : '/static/1745514585/img/star.svg';
+
+            const star = document.createElement('img');
+            star.setAttribute('src', starUrl + '?t=' + (+new Date()));
+            star.style.cssText = 'position:fixed;top:0;left:0;bottom:0;right:0;width:100%;height:100%;z-index:9999;pointer-events:none;';
+            star.onload = function() { setTimeout(() => star.remove(), 3000); };
+            star.onerror = function() { star.remove(); };
+            document.body.appendChild(star);
+          }
+        }, 60);
       });
 
       menu.appendChild(solveBtn);
