@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         CrosswordLabs Solution Overlay
+// @name         CrosswordLabs Solution Overlay & Autofill
 // @namespace    https://github.com/yvliet/crosswordlabs-solutions
-// @version      1.2.1
-// @description  Renders a toggleable solution watermark directly underneath user inputs on CrosswordLabs puzzle grids.
+// @version      1.3.0
+// @description  Adds a solution watermark overlay and a 1-click solve button to CrosswordLabs puzzles.
 // @author       yvliet
 // @match        https://crosswordlabs.com/view/*
 // @match        https://crosswordlabs.com/embed/*
@@ -21,11 +21,11 @@
       return;
     }
 
-    if (document.querySelector('#crosswordlabs-overlay-style')) return;
+    if (document.querySelector('#crosswordlabs-tools-style')) return;
 
     // Inject styling
     const style = document.createElement('style');
-    style.id = 'crosswordlabs-overlay-style';
+    style.id = 'crosswordlabs-tools-style';
     style.textContent = `
       .cx-hint {
         display: none;
@@ -39,17 +39,20 @@
       .cx svg.show-hints .cx-hint {
         display: inline;
       }
-      #toggle-overlay-btn {
+      #toggle-overlay-btn,
+      #solve-puzzle-btn {
         margin-left: 8px;
         font-weight: 600;
-        background-color: #2563eb;
-        color: #ffffff;
-        border: 1px solid #1d4ed8;
         border-radius: 4px;
         padding: 4px 12px;
         cursor: pointer;
         font-size: 13px;
         transition: background-color 0.15s ease, border-color 0.15s ease;
+      }
+      #toggle-overlay-btn {
+        background-color: #2563eb;
+        color: #ffffff;
+        border: 1px solid #1d4ed8;
       }
       #toggle-overlay-btn:hover {
         background-color: #1d4ed8;
@@ -61,6 +64,14 @@
       }
       #toggle-overlay-btn.active:hover {
         background-color: #047857;
+      }
+      #solve-puzzle-btn {
+        background-color: #10b981;
+        color: #ffffff;
+        border: 1px solid #059669;
+      }
+      #solve-puzzle-btn:hover {
+        background-color: #059669;
       }
     `;
     document.head.appendChild(style);
@@ -90,23 +101,52 @@
       });
     });
 
-    // Add toggle button to toolbar
+    // Add buttons to toolbar
     const menu = document.querySelector('.view-menu');
-    if (menu && !document.querySelector('#toggle-overlay-btn')) {
-      const btn = document.createElement('button');
-      btn.id = 'toggle-overlay-btn';
-      btn.type = 'button';
-      btn.textContent = 'Show Solutions';
-      btn.setAttribute('aria-pressed', 'false');
+    if (menu) {
+      if (!document.querySelector('#toggle-overlay-btn')) {
+        const toggleBtn = document.createElement('button');
+        toggleBtn.id = 'toggle-overlay-btn';
+        toggleBtn.type = 'button';
+        toggleBtn.textContent = 'Show Solutions';
+        toggleBtn.setAttribute('aria-pressed', 'false');
 
-      btn.addEventListener('click', () => {
-        const isShowing = svg.classList.toggle('show-hints');
-        btn.textContent = isShowing ? 'Hide Solutions' : 'Show Solutions';
-        btn.classList.toggle('active', isShowing);
-        btn.setAttribute('aria-pressed', isShowing.toString());
-      });
+        toggleBtn.addEventListener('click', () => {
+          const isShowing = svg.classList.toggle('show-hints');
+          toggleBtn.textContent = isShowing ? 'Hide Solutions' : 'Show Solutions';
+          toggleBtn.classList.toggle('active', isShowing);
+          toggleBtn.setAttribute('aria-pressed', isShowing.toString());
+        });
 
-      menu.appendChild(btn);
+        menu.appendChild(toggleBtn);
+      }
+
+      if (!document.querySelector('#solve-puzzle-btn')) {
+        const solveBtn = document.createElement('button');
+        solveBtn.id = 'solve-puzzle-btn';
+        solveBtn.type = 'button';
+        solveBtn.textContent = 'Solve Puzzle';
+
+        solveBtn.addEventListener('click', () => {
+          window.grid.forEach((row, r) => {
+            row.forEach((cell, c) => {
+              if (cell && cell.char) {
+                const textNode = document.querySelector(`#cx-${r}-${c} .cx-a`);
+                if (textNode) {
+                  textNode.textContent = cell.char.toLowerCase();
+                }
+              }
+            });
+          });
+
+          const gradeBtn = document.querySelector('#grade');
+          if (gradeBtn) {
+            gradeBtn.click();
+          }
+        });
+
+        menu.appendChild(solveBtn);
+      }
     }
   }
 
